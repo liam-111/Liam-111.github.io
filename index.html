@@ -2,10 +2,63 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.js GLB Model</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
 </head>
 <body>
-    <h1>portfolio</h1>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script>
+          let model;
+        // Сцена
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xaaaaaa);
+
+        // Камера
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 5;
+
+        // Рендерер
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Освещение
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(5, 5, 5).normalize();
+        scene.add(light);
+
+        // Загрузчик glTF
+        const loader = new THREE.GLTFLoader();
+        loader.load('src/3d/apple.glb', function (gltf) {
+             model = gltf.scene;
+            model.scale.set(22, 22, 22); // Увеличиваем модель в 2 раза по всем осям
+            scene.add(model);
+            animate();
+        }, undefined, function (error) {
+            console.error(error);
+        });
+
+        // Анимация
+        function animate() {
+            requestAnimationFrame(animate);
+            if (model) {
+                model.rotation.y += 0.01; // Вращаем модель вокруг оси Y
+            }
+            renderer.render(scene, camera);
+        }
+
+        // Обработка изменения размера окна
+        window.addEventListener('resize', function () {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+    </script>
 </body>
 </html>
